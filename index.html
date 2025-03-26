@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cat Clicker</title>
+    <style>
+        .container {
+            display: flex;
+            gap: 20px;
+        }
+        .game, .upgrades {
+            flex: 1;
+        }
+        .game {
+            border-right: 1px solid lightgrey; /* Adds a light grey line between the sections */
+            padding-right: 20px;
+        }
+        button {
+            display: block;
+            margin: 10px 0;
+        }
+        li {
+            list-style: none;
+            padding: 5px 0;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="game">
+            <h1>Cat Clicker</h1>
+            <p>Cats: <span id="score">0</span></p>
+            <button id="clickCatBtn">Click Cat (+<span id="clickValue">1</span>)</button>
+            <button id="autoClickerBtn" onclick="buyAutoClicker()" disabled>Buy Auto Clicker (Cost: <span id="autoClickerCost">10</span>)</button>
+            <button id="upgradeClickBtn" onclick="buyUpgrade()" disabled>Upgrade Click (Cost: <span id="upgradeClickCost">20</span>)</button>
+            <button id="catFactoryBtn" onclick="buyCatFactory()" disabled>Buy Cat Factory (Cost: <span id="catFactoryCost">100</span>)</button>
+        </div>
+        <div class="upgrades">
+            <h2>Upgrades:</h2>
+            <ul id="upgradeList">
+                <!-- List of upgrades will appear here -->
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        let cats = 0;
+        let clickValue = 1;
+        let autoClickers = 0;
+        let clickUpgrades = 0;
+        let catFactories = 0;
+        let autoClickerCost = 10;
+        let upgradeClickCost = 20;
+        let catFactoryCost = 100;
+
+        const scoreDisplay = document.getElementById('score');
+        const clickValueDisplay = document.getElementById('clickValue');
+        const autoClickerBtn = document.getElementById('autoClickerBtn');
+        const upgradeClickBtn = document.getElementById('upgradeClickBtn');
+        const catFactoryBtn = document.getElementById('catFactoryBtn');
+        const upgradeList = document.getElementById('upgradeList');
+        const autoClickerCostDisplay = document.getElementById('autoClickerCost');
+        const upgradeClickCostDisplay = document.getElementById('upgradeClickCost');
+        const catFactoryCostDisplay = document.getElementById('catFactoryCost');
+
+        function clickCat() {
+            cats += clickValue;
+            updateDisplay();
+        }
+
+        document.getElementById('clickCatBtn').addEventListener('click', clickCat);
+
+        function buyAutoClicker() {
+            if (cats >= autoClickerCost) {
+                cats -= autoClickerCost;
+                autoClickers++;
+                autoClickerCost = Math.floor(autoClickerCost * 1.2);
+                autoClickerCostDisplay.textContent = autoClickerCost;
+                updateUpgradeList();
+                autoClickerBtn.disabled = cats < autoClickerCost;
+
+                if (autoClickers === 1) {
+                    startAutoClickers();
+                }
+            }
+        }
+
+        function buyUpgrade() {
+            if (cats >= upgradeClickCost) {
+                cats -= upgradeClickCost;
+                clickValue++;
+                clickUpgrades++;
+                upgradeClickCost = Math.floor(upgradeClickCost * 1.3);
+                clickValueDisplay.textContent = clickValue;
+                upgradeClickCostDisplay.textContent = upgradeClickCost;
+                updateUpgradeList();
+                upgradeClickBtn.disabled = cats < upgradeClickCost;
+            }
+        }
+
+        function buyCatFactory() {
+            if (cats >= catFactoryCost) {
+                cats -= catFactoryCost;
+                catFactories++;
+                catFactoryCost = Math.floor(catFactoryCost * 1.5);
+                catFactoryCostDisplay.textContent = catFactoryCost;
+                updateUpgradeList();
+                catFactoryBtn.disabled = cats < catFactoryCost;
+                if (catFactories === 1) {
+                    startCatFactories();
+                }
+            }
+        }
+
+        function startAutoClickers() {
+            setInterval(() => {
+                cats += autoClickers;
+                updateDisplay();
+            }, 1000);
+        }
+
+        function startCatFactories() {
+            setInterval(() => {
+                cats += catFactories * 10;
+                updateDisplay();
+            }, 1000);
+        }
+
+        function updateDisplay() {
+            scoreDisplay.textContent = cats;
+            autoClickerBtn.disabled = cats < autoClickerCost;
+            upgradeClickBtn.disabled = cats < upgradeClickCost;
+            catFactoryBtn.disabled = cats < catFactoryCost;
+        }
+
+        function updateUpgradeList() {
+            upgradeList.innerHTML = '';
+            if (autoClickers > 0) {
+                const autoClickerItem = document.createElement('li');
+                autoClickerItem.innerHTML = `Auto Clicker x${autoClickers}`;
+                upgradeList.appendChild(autoClickerItem);
+            }
+            if (clickUpgrades > 0) {
+                const clickUpgradeItem = document.createElement('li');
+                clickUpgradeItem.innerHTML = `Click Upgrade x${clickUpgrades}`;
+                upgradeList.appendChild(clickUpgradeItem);
+            }
+            if (catFactories > 0) {
+                const catFactoryItem = document.createElement('li');
+                catFactoryItem.innerHTML = `Cat Factory x${catFactories}`;
+                upgradeList.appendChild(catFactoryItem);
+            }
+        }
+    </script>
+
+</body>
+</html>
